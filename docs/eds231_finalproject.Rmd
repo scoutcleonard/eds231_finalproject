@@ -1,0 +1,10 @@
+---
+title: "EDS 231: Assignment 2"
+author: "Juliet Cohen, Charles Hendrickson,Scout Leonard, Peter Menzies"
+date: '`r format(Sys.time(), "%m/%d/%Y")`'
+output: pdf_document
+header-includes:
+  - \setlength{\parindent}{1em}
+  - \usepackage{float}
+---
+
