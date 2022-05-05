@@ -15,6 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(jsonlite)  
 library(tidyverse) 
 library(tidytext) 
+library(here)
 
 requery <- TRUE
 ```
@@ -50,10 +51,10 @@ if (requery == TRUE)
     
     df <- rbind_pages(pages)
   
-    saveRDS(df, "~/MEDS/Spring_Quarter/EDS_231_Text/EDS-231-assignments/data/nyt_nuclear_energy.RDS")
+    saveRDS(df, here("data", "nyt_nuclear_energy.RDS"))
 }
 
-#df <- readRDS(here::here("data", "nyt_nuclear_power.rds"))
+#df <- readRDS(here("data", "nyt_nuclear_power.RDS"))
 ```
 
 
