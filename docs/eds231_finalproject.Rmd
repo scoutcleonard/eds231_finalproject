@@ -54,7 +54,7 @@ if (requery == TRUE)
     saveRDS(df, here("data", "nyt_nuclear_energy.RDS"))
 }
 
-#df <- readRDS(here("data", "nyt_nuclear_power.RDS"))
+#df <- readRDS(here("data", "nyt_nuclear_energy.RDS"))
 ```
 
 
