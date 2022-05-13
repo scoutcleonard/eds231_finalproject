@@ -162,4 +162,3 @@ if (requery == TRUE)
     saveRDS(df, here("data", "nyt_nuclear_energy_fukushima.RDS"))
 }
 ```
-
