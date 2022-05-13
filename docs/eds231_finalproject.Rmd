@@ -15,150 +15,39 @@ library(jsonlite)
 library(tidyverse) 
 library(tidytext) 
 library(here)
+library(LexisNexisTools)
 
 requery <- TRUE
 ```
 
 # Download Data
 
-## SL-1 Accident data
-
-```{r}
-if (requery == TRUE) 
-  {
-    term <- "nuclear+energy" # Need to use + to string together separate words
-    begin_date <- "19601203"
-    end_date <- "19610203"
-    
-    #construct the query url using API operators
-    baseurl <- paste0("http://api.nytimes.com/svc/search/v2/articlesearch.json?q=",
-                      term,
-                      "&begin_date=",
-                      begin_date,
-                      "&end_date=",
-                      end_date,
-                      "&",
-                      "&facet_filter=true&api-key=",
-                      "cqRVqR7OxTbIN7WkN9GJ3DgGsEbMI2cR",
-                      sep = "") 
-    
-    
-    initialQuery <- fromJSON(baseurl)
-    
-    maxPages <- round((initialQuery$response$meta$hits[1] / 10) - 1) 
-    
-    pages <- list()
-    for (i in 0:maxPages) 
-      {
-        nytSearch <- fromJSON(paste0(baseurl, 
-                                     "&page=",
-                                     i), 
-                              flatten = TRUE) %>%
-          data.frame() 
-        
-        message("Retrieving page ", i)
-        
-        pages[[i+1]] <- nytSearch 
-        
-        Sys.sleep(6) 
-    }
-    
-    class(nytSearch)
-    
-    df <- rbind_pages(pages)
-  
-    saveRDS(df, here("data", "nyt_nuclear_energy_sl1.RDS"))
-}
-
-sl1_df <- readRDS(here("data", "nyt_nuclear_energy_sl1.RDS"))
-```
-
 ## Three Mile Island Accident data
 
-```{r}
-if (requery == TRUE) 
-  {
-    term <- "nuclear+energy" # Need to use + to string together separate words
-    begin_date <- "19780228"
-    end_date <- "19780428"
-    
-    #construct the query url using API operators
-    baseurl <- paste0("http://api.nytimes.com/svc/search/v2/articlesearch.json?q=",
-                      term,
-                      "&begin_date=",
-                      begin_date,
-                      "&end_date=",
-                      end_date,
-                      "&",
-                      "&facet_filter=true&api-key=",
-                      "cqRVqR7OxTbIN7WkN9GJ3DgGsEbMI2cR",
-                      sep = "") 
-    
-    
-    initialQuery <- fromJSON(baseurl)
-    
-    maxPages <- round((initialQuery$response$meta$hits[1] / 10) - 1) 
-    
-    pages <- list()
-    for (i in 0:maxPages) 
-      {
-        nytSearch <- fromJSON(paste0(baseurl, 
-                                     "&page=",
-                                     i), 
-                              flatten = TRUE) %>%
-          data.frame() 
-        
-        message("Retrieving page ", i)
-        
-        pages[[i+1]] <- nytSearch 
-        
-        Sys.sleep(6) 
-    }
-    
-    class(nytSearch)
-    
-    df <- rbind_pages(pages)
-  
-    saveRDS(df, here("data", "nyt_nuclear_energy_threemile.RDS"))
-}
+```{r three mile data}
 
-threemile_df <- readRDS(here("data", "nyt_nuclear_energy_threemile.RDS"))
 ```
 
 ## Chernobyl disaster data
 
+```{r chernobyl data}
+chernobyl_files <- list.files(pattern = ".docx",
+                              path = here("data/chernobyl"),
+                              full.names = TRUE,
+                              recursive = TRUE,
+                              ignore.case = TRUE)
+
+chernobyl_data <- lnt_read(chernobyl_files) #Object of class 'LNT output'
+```
+
 ## Fukashima disaster data
 
-```{r}
-if (requery == TRUE) 
-  {
-    term <- "nuclear+energy" # Need to use + to string together separate words
-    begin_date <- "20110211"
-    end_date <- "20110411"
-    
-    #construct the query url using API operators
-    baseurl <- paste0("http://api.nytimes.com/svc/search/v2/articlesearch.json?q=", term,
-                      "&begin_date=",begin_date, "&end_date=", end_date,
-                      "&facet_filter=true&api-key=", "cqRVqR7OxTbIN7WkN9GJ3DgGsEbMI2cR",
-                      sep = "") 
-    
-    
-    initialQuery <- fromJSON(baseurl)
-    maxPages <- round((initialQuery$response$meta$hits[1] / 10) - 1) 
-    
-    pages <- list()
-    for (i in 0:maxPages) 
-      {
-        nytSearch <- fromJSON(paste0(baseurl, "&page=", i), flatten = TRUE) %>%
-          data.frame() 
-        message("Retrieving page ", i)
-        pages[[i+1]] <- nytSearch 
-        Sys.sleep(6) 
-    }
-    class(nytSearch)
-    
-    df <- rbind_pages(pages)
-  
-    saveRDS(df, here("data", "nyt_nuclear_energy_fukushima.RDS"))
-}
+```{r fukashima data}
+fukashima_files <- list.files(pattern = ".docx",
+                         path = here("data/fukashima"),
+                         full.names = TRUE,
+                         recursive = TRUE,
+                         ignore.case = TRUE)
+
+fukashima_data <- lnt_read(fukashima_files) #Object of class 'LNT output'
 ```
