@@ -25,7 +25,21 @@ requery <- TRUE
 ## Three Mile Island Accident data
 
 ```{r three mile data}
+threemileisland_files <- list.files(pattern = ".docx",
+                                    path = here("data/threemileisland"),
+                                    full.names = TRUE,
+                                    recursive = TRUE,
+                                    ignore.case = TRUE)
 
+threemileisland_data <- lnt_read(threemileisland_files) #Object of class 'LNT output'
+
+threemileisland_meta_df <- threemileisland_data@meta
+threemileisland_articles_df <- threemileisland_data@articles
+threemileisland_paragraphs_df <- threemileisland_data@paragraphs
+
+threemileisland_df<- data_frame(element_id = seq(1:length(threemileisland_meta_df$Headline)),
+                                Date = threemileisland_meta_df$Date,
+                                Headline = threemileisland_meta_df$Headline)
 ```
 
 ## Chernobyl disaster data
@@ -38,6 +52,14 @@ chernobyl_files <- list.files(pattern = ".docx",
                               ignore.case = TRUE)
 
 chernobyl_data <- lnt_read(chernobyl_files) #Object of class 'LNT output'
+
+chernobyl_meta_df <- chernobyl_data@meta
+chernobyl_articles_df <- chernobyl_data@articles
+chernobyl_paragraphs_df <- chernobyl_data@paragraphs
+
+chernobyl_df<- data_frame(element_id = seq(1:length(chernobyl_meta_df$Headline)),
+                                Date = chernobyl_meta_df$Date,
+                                Headline = chernobyl_meta_df$Headline)
 ```
 
 ## Fukashima disaster data
@@ -50,4 +72,12 @@ fukashima_files <- list.files(pattern = ".docx",
                          ignore.case = TRUE)
 
 fukashima_data <- lnt_read(fukashima_files) #Object of class 'LNT output'
+
+fukashima_meta_df <- fukashima_data@meta
+fukashima_articles_df <- fukashima_data@articles
+fukashima_paragraphs_df <- fukashima_data@paragraphs
+
+chernobyl_df<- data_frame(element_id = seq(1:length(fukashima_meta_df$Headline)),
+                                Date = fukashima_meta_df$Date,
+                                Headline = fukashima_meta_df$Headline)
 ```
