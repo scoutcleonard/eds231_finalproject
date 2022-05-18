@@ -204,4 +204,4 @@ ggplot(data = threemileisland_sent_plot, aes(x = Date, y = n)) +
 
 ### Chernobyl disaster
 
-### Fukashima disaster 
+### Fukashima disaster
