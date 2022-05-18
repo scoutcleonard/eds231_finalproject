@@ -16,6 +16,7 @@ library(tidyverse)
 library(tidytext) 
 library(here)
 library(LexisNexisTools)
+library(tidytext)
 
 requery <- TRUE
 ```
@@ -33,13 +34,16 @@ threemileisland_files <- list.files(pattern = ".docx",
 
 threemileisland_data <- lnt_read(threemileisland_files) #Object of class 'LNT output'
 
-threemileisland_meta_df <- threemileisland_data@meta
+threemileisland_meta_df <- threemileisland_data@meta %>% 
+  rename(Art_ID = ID)
+
 threemileisland_articles_df <- threemileisland_data@articles
+
 threemileisland_paragraphs_df <- threemileisland_data@paragraphs
 
-threemileisland_df<- data_frame(element_id = seq(1:length(threemileisland_meta_df$Headline)),
-                                Date = threemileisland_meta_df$Date,
-                                Headline = threemileisland_meta_df$Headline)
+#joined df with paraagraphs and dates 
+threemileisland_df <- full_join(threemileisland_paragraphs_df,
+                                threemileisland_meta_df)
 ```
 
 ## Chernobyl disaster data
@@ -81,3 +85,22 @@ chernobyl_df<- data_frame(element_id = seq(1:length(fukashima_meta_df$Headline))
                                 Date = fukashima_meta_df$Date,
                                 Headline = fukashima_meta_df$Headline)
 ```
+
+## Sentiment time series
+
+Read in sentiment analysis Lexicon:
+
+```{r}
+bing_sent <- get_sentiments('bing')
+```
+
+### Three Mile Island disaster
+
+```{r}
+#get sentences from three mile island paragraphs
+threemileisland_text <- get_sentences(threemileisland_df$)
+```
+
+### Chernobyl disaster
+
+### Fukashima disaster 
