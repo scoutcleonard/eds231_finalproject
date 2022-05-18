@@ -107,23 +107,29 @@ threemileisland_sent <- sentiment(threemileisland_text)
 # threemileisland_df <- threemileisland_df %>% 
 #   mutate(element_id = 1:length(threemileisland_df$Art_ID))
 
-threemileisland_sent <- inner_join(threemileisland_df, 
+threemileisland_sent_df <- inner_join(threemileisland_df, 
                                    threemileisland_sent,
                                    by = c("Par_ID" = "element_id")) %>% 
   select(c("Par_ID", "sentiment", "Paragraph", "Date", "Newspaper"))
 ```
 
 ```{r}
+threemileisland_sent_paragraphs <- threemileisland_sent_df %>% 
+  group_by(Par_ID) %>% 
+  summarise(paragraph_sent  = mean(sentiment)) 
+
+# threemileisland_sent_paragraphs <- 
+
 # catgorize for ggplot
 threemileisland_sent <- threemileisland_sent %>%
   mutate(sent_category = case_when(
-    sentiment < 0 ~ "negative",
-    sentiment == 0 ~ "neutral",
-    sentiment > 0 ~ "positive"
+    paragraph_sent < 0 ~ "negative",
+    paragraph_sent == 0 ~ "neutral",
+    paragraph_sent > 0 ~ "positive"
   ))
 
 head(threemileisland_sent, 5) %>% 
-  kable()
+  knitr::kable()
 
 #generate counts of sentiment sentences by date to plot
 threemileisland_sent_plot <- threemileisland_sent %>%
