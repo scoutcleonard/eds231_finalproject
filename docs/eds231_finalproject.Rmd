@@ -17,6 +17,7 @@ library(tidytext)
 library(here)
 library(LexisNexisTools)
 library(tidytext)
+library(sentimentr)
 
 requery <- TRUE
 ```
@@ -148,7 +149,51 @@ bing_sent <- get_sentiments('bing')
 
 ```{r}
 #get sentences from three mile island paragraphs
-threemileisland_text <- get_sentences(threemileisland_df$)
+threemileisland_text <- get_sentences(threemileisland_df$Paragraph)
+
+#get sentiment from each sentence
+threemileisland_sent <- sentiment(threemileisland_text)
+# 
+# threemileisland_df <- threemileisland_df %>% 
+#   mutate(element_id = 1:length(threemileisland_df$Art_ID))
+
+threemileisland_sent <- inner_join(threemileisland_df, 
+                                   threemileisland_sent,
+                                   by = c("Par_ID" = "element_id")) %>% 
+  select(c("Par_ID", "sentiment", "Paragraph", "Date", "Newspaper"))
+```
+
+```{r}
+# catgorize for ggplot
+threemileisland_sent <- threemileisland_sent %>%
+  mutate(sent_category = case_when(
+    sentiment < 0 ~ "negative",
+    sentiment == 0 ~ "neutral",
+    sentiment > 0 ~ "positive"
+  ))
+
+head(threemileisland_sent, 5) %>% 
+  kable()
+
+#generate counts of sentiment sentences by date to plot
+threemileisland_sent_plot <- threemileisland_sent %>%
+  count(sent_category, Date)
+
+#plot it UP
+threemileisland_date <- which(threemileisland_df$Date %in% as.Date("1978-03-28"))
+
+ggplot(data = threemileisland_sent_plot, aes(x = Date, y = n)) +
+         geom_line(aes(color = sent_category)) +
+  theme_minimal() +
+  labs(y = "Developed Media Sentiment (no. headlines)",
+       x = "Date",
+       title = "Three Mile Island Publication Text Sentiment Analysis") +
+  scale_color_manual(values = c("blue", "grey", "red")) +
+  theme(plot.title = element_text(size = 20, hjust = 0.5),
+        axis.title = element_text(size = 15),
+        axis.text = element_text(size = 10)) +
+  geom_vline(xintercept = as.numeric(threemileisland_df$Date[threemileisland_date]),
+             col = "black")
 ```
 
 ### Chernobyl disaster
