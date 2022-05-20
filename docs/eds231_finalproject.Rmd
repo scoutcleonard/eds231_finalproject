@@ -11,6 +11,7 @@ header-includes:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
+#load libraries
 library(jsonlite)  
 library(tidyverse) 
 library(tidytext) 
@@ -18,8 +19,7 @@ library(here)
 library(LexisNexisTools)
 library(tidytext)
 library(sentimentr)
-
-requery <- TRUE
+library(janitor)
 ```
 
 # Download Data
@@ -91,14 +91,96 @@ fukashima_paragraphs_df <- fukashima_data@paragraphs
 #joined df with paragraphs and dates 
 fukashima_df <- full_join(fukashima_paragraphs_df,
                                 fukashima_meta_df)
+```
 
+## Sentiment time series
+
+Read in sentiment analysis Lexicon:
+
+```{r}
+bing_sent <- get_sentiments('bing')
+```
+
+### Three Mile Island disaster
+
+#### Process data 
+
+First, we create a dataframe that contains every sentence from publications before and after the disaster and their sentiments:
+
+```{r}
+#get sentences from three mile island paragraphs
+threemileisland_text <- get_sentences(threemileisland_df$Paragraph)
+
+#get sentiment from each sentence
+threemileisland_sent <- sentiment(threemileisland_text)
+
+#join sentiment dataframe with article info (this way, our dataframe contains dates)
+threemileisland_sent_df <- inner_join(threemileisland_df, 
+                                   threemileisland_sent,
+                                   by = c("Par_ID" = "element_id")) %>% 
+  select(c("Par_ID", "sentiment", "Paragraph", "Date", "Newspaper"))
+```
+
+Next, we find the mean sentiment of each paragraph in all our publication data for this event:
+
+```{r}
+#find mean sentiment per paragraph
+threemileisland_sent_paragraphs <- threemileisland_sent_df %>% 
+  group_by(Par_ID) %>% 
+  summarise(paragraph_sent  = mean(sentiment)) 
+
+# catgorize for ggplot
+threemileisland_sent <- threemileisland_sent_paragraphs %>%
+  mutate(sent_category = case_when(
+    paragraph_sent < 0 ~ "negative",
+    paragraph_sent == 0 ~ "neutral",
+    paragraph_sent > 0 ~ "positive"
+  )) %>% 
+  inner_join(threemileisland_df, by = "Par_ID")
+
+#generate counts of sentiment sentences by date to plot
+threemileisland_sent_plot <- threemileisland_sent %>%
+  count(sent_category, Date)
+```
+
+#### Visualize sentiment
+
+```{r}
+#plot it UP
+threemileisland_date <- which(threemileisland_df$Date %in% as.Date("1978-03-28"))
+
+ggplot(data = threemileisland_sent_plot, aes(x = Date, y = n)) +
+         geom_line(aes(color = sent_category)) +
+  theme_minimal() +
+  labs(y = "Developed Media Sentiment (no. headlines)",
+       x = "Date",
+       title = "Three Mile Island Publication Text Sentiment Analysis") +
+  scale_color_manual(values = c("blue", "grey", "red")) +
+  theme(plot.title = element_text(size = 20, hjust = 0.5),
+        axis.title = element_text(size = 15),
+        axis.text = element_text(size = 10)) +
+  geom_vline(xintercept = as.numeric(threemileisland_df$Date[threemileisland_date]),
+             col = "black")
+```
+
+### Chernobyl disaster
+
+### Fukashima disaster
+
+#### Process data 
+
+```{r}
 fukashima_text <- get_sentences(fukashima_df$Paragraph)
 fukashima_sent <- sentiment(fukashima_text) # neutral = 0.0000, scale -1 to 1, 0.06 = slightly positive, etc.
 
 # this tool considers more than just individual words, it understands the diff btw "it is too late" and "it is not too late"
 # 
 fukashima_sent_df <- inner_join(fukashima_df, fukashima_sent, by = c("Par_ID" = "element_id"))
+```
 
+#### Visualize sentiment time series 
+
+```{r}
 # select only relevant columns
 fukashima_sent_df_subset <- fukashima_sent_df %>% 
   select(Par_ID, Paragraph, Newspaper, Date, sentiment)
@@ -137,69 +219,18 @@ fukushima_pos_neg_neutral <- fukashima_sent_summary %>%
   count(sent_category, Date)
 ```
 
-## Sentiment time series
-
-Read in sentiment analysis Lexicon:
-
-```{r}
-bing_sent <- get_sentiments('bing')
-```
+## Emotion time series
 
 ### Three Mile Island disaster
 
 ```{r}
-#get sentences from three mile island paragraphs
-threemileisland_text <- get_sentences(threemileisland_df$Paragraph)
-
-#get sentiment from each sentence
-threemileisland_sent <- sentiment(threemileisland_text)
-# 
-# threemileisland_df <- threemileisland_df %>% 
-#   mutate(element_id = 1:length(threemileisland_df$Art_ID))
-
-threemileisland_sent_df <- inner_join(threemileisland_df, 
-                                   threemileisland_sent,
-                                   by = c("Par_ID" = "element_id")) %>% 
-  select(c("Par_ID", "sentiment", "Paragraph", "Date", "Newspaper"))
+#get nrc emotions lexicon
+nrc_sent <- get_sentiments('nrc') %>% 
+  filter(sentiment != "negative" & sentiment != "positive") 
 ```
 
 ```{r}
-threemileisland_sent_paragraphs <- threemileisland_sent_df %>% 
-  group_by(Par_ID) %>% 
-  summarise(paragraph_sent  = mean(sentiment)) 
 
-# threemileisland_sent_paragraphs <- 
-
-# catgorize for ggplot
-threemileisland_sent <- threemileisland_sent %>%
-  mutate(sent_category = case_when(
-    paragraph_sent < 0 ~ "negative",
-    paragraph_sent == 0 ~ "neutral",
-    paragraph_sent > 0 ~ "positive"
-  ))
-
-head(threemileisland_sent, 5) %>% 
-  knitr::kable()
-
-#generate counts of sentiment sentences by date to plot
-threemileisland_sent_plot <- threemileisland_sent %>%
-  count(sent_category, Date)
-
-#plot it UP
-threemileisland_date <- which(threemileisland_df$Date %in% as.Date("1978-03-28"))
-
-ggplot(data = threemileisland_sent_plot, aes(x = Date, y = n)) +
-         geom_line(aes(color = sent_category)) +
-  theme_minimal() +
-  labs(y = "Developed Media Sentiment (no. headlines)",
-       x = "Date",
-       title = "Three Mile Island Publication Text Sentiment Analysis") +
-  scale_color_manual(values = c("blue", "grey", "red")) +
-  theme(plot.title = element_text(size = 20, hjust = 0.5),
-        axis.title = element_text(size = 15),
-        axis.text = element_text(size = 10)) +
-  geom_vline(xintercept = as.numeric(threemileisland_df$Date[threemileisland_date]),
-             col = "black")
 ```
 
 ### Chernobyl disaster
