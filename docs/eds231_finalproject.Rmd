@@ -59,13 +59,17 @@ chernobyl_files <- list.files(pattern = ".docx",
 
 chernobyl_data <- lnt_read(chernobyl_files) #Object of class 'LNT output'
 
-chernobyl_meta_df <- chernobyl_data@meta
+chernobyl_meta_df <- chernobyl_data@meta %>% 
+  rename(Art_ID = ID)
+
 chernobyl_articles_df <- chernobyl_data@articles
 chernobyl_paragraphs_df <- chernobyl_data@paragraphs
 
-chernobyl_df<- data_frame(element_id = seq(1:length(chernobyl_meta_df$Headline)),
-                                Date = chernobyl_meta_df$Date,
-                                Headline = chernobyl_meta_df$Headline)
+#joined chernobyl df with paraagraphs and dates 
+chernobyl_df <- full_join(chernobyl_paragraphs_df,
+                                chernobyl_meta_df)
+
+# chernobyl_df<- data_frame(element_id = seq(1:length(chernobyl_meta_df$Headline)), Date = chernobyl_meta_df$Date, Headline = chernobyl_meta_df$Headline)
 ```
 
 ## Fukashima disaster data
@@ -164,6 +168,8 @@ ggplot(data = threemileisland_sent_plot, aes(x = Date, y = n)) +
 ```
 
 ### Chernobyl disaster
+
+
 
 ### Fukashima disaster
 
