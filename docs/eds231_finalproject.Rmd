@@ -419,6 +419,116 @@ ggplot(fukushima_emotion_pct, aes(x = date, y = percentiment)) +
 
 ### Three Mile Island
 
+#### Clean tokens
+
+```{r}
+threemile_words <- threemile_words %>% 
+  anti_join(stop_words)
+
+#remove numbers 
+threemile_clean_tokens <- str_remove_all(threemile_words$word, "[:digit:]")
+
+#removes appostrophes
+threemile_clean_tokens <- gsub("’s", '', threemile_clean_tokens)
+
+threemile_words$clean <- threemile_clean_tokens
+
+#remove the empty strings
+threemile_tib <-subset(threemile_words, clean != "")
+
+#reassign
+threemile_tokenized <- threemile_tib
+```
+
+#### Plot word frequency 
+
+```{r}
+threemile_tokenized %>%
+  count(clean, sort = TRUE) %>%
+  filter(n > 70) %>% 
+  mutate(clean = reorder(clean, n)) %>%
+  ggplot(aes(n, clean)) +
+  geom_col() +
+  labs(y = NULL) +
+  theme_minimal() +
+  labs(x = "Word Frequency",
+       title = "Word Frequency from Media Surrounding \nthe Three Mile Island Disaster")
+```
+
 ### Chernobyl disaster
 
+#### Clean tokens
+
+```{r}
+chernobyl_words <- chernobyl_words %>% 
+  anti_join(stop_words)
+
+#remove numbers 
+chernobyl_clean_tokens <- str_remove_all(chernobyl_words$word, "[:digit:]")
+
+#removes appostrophes
+chernobyl_clean_tokens <- gsub("’s", '', chernobyl_clean_tokens)
+
+chernobyl_words$clean <- chernobyl_clean_tokens
+
+#remove the empty strings
+chernobyl_tib <-subset(chernobyl_words, clean != "")
+
+#reassign
+chernobyl_tokenized <- chernobyl_tib
+```
+
+#### Plot word frequency 
+
+```{r}
+chernobyl_tokenized %>%
+  count(clean, sort = TRUE) %>%
+  filter(n > 70) %>% 
+  mutate(clean = reorder(clean, n)) %>%
+  ggplot(aes(n, clean)) +
+  geom_col() +
+  labs(y = NULL) +
+  theme_minimal() +
+  labs(x = "Word Frequency",
+       title = "Word Frequency from Media Surrounding \nthe Chernobyl Disaster")
+```
+
 ### Fukashima disaster 
+
+#### Clean tokens
+
+```{r}
+fukushima_words <- fukushima_words %>% 
+  anti_join(stop_words)
+
+#remove numbers 
+fukushima_clean_tokens <- str_remove_all(fukushima_words$word, "[:digit:]")
+
+#removes appostrophes
+fukushima_clean_tokens <- gsub("’s", '', fukushima_clean_tokens)
+
+fukushima_words$clean <- fukushima_clean_tokens
+
+#remove the empty strings
+fukushima_tib <-subset(fukushima_words, clean != "")
+
+#reassign
+fukushima_tokenized <- fukushima_tib
+```
+
+#### Plot word frequency 
+
+```{r}
+fukushima_tokenized %>%
+  count(clean, sort = TRUE) %>%
+  filter(n > 70) %>% 
+  mutate(clean = reorder(clean, n)) %>%
+  ggplot(aes(n, clean)) +
+  geom_col() +
+  labs(y = NULL) +
+  theme_minimal() +
+  labs(x = "Word Frequency",
+       title = "Word Frequency from Media Surrounding \nthe Fukushima Disaster")
+```
+
+### 
