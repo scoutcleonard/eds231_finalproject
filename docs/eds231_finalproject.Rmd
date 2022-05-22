@@ -169,6 +169,9 @@ ggplot(data = threemileisland_sent_plot, aes(x = Date, y = n)) +
 
 ### Chernobyl disaster
 
+```{r}
+chernobyl_event <- as.Date("1986-04-26")
+```
 
 
 ### Fukashima disaster
@@ -193,7 +196,7 @@ fukashima_sent_summary <- fukashima_sent_df %>%
   group_by(Par_ID) %>%
   summarize(sentiment_average = mean(sentiment))
 
-fukashima_sent_summary_date <- inner_join(fukashima_sent_summary, fukashima_sent_df_subset, by = "Par_ID") %>% 
+fukashima_sent_summary_date <- inner_join(fukashima_sent_summary, fukashima_sent_df, by = "Par_ID") %>% 
   select(Par_ID, sentiment_average, Date)
 
 # check to see if any NA values are present in the df
@@ -238,18 +241,121 @@ ggplot(fukushima_pos_neg_neutral, aes(x = Date, y = n)) +
 
 ## Emotion time series
 
-### Three Mile Island disaster
-
 ```{r}
 #get nrc emotions lexicon
 nrc_sent <- get_sentiments('nrc') %>% 
-  filter(sentiment != "negative" & sentiment != "positive") 
+  filter(sentiment != "negative" & sentiment != "positive") %>% 
+  rename(emotion = sentiment)
 ```
+
+### Three Mile Island disaster
+
+#### Tokenize article words and assign emotion categories
 
 ```{r}
+# Splitting into individual words
+threemile_words <- threemileisland_df %>%
+  clean_names() %>%
+  select(!c(source_file, newspaper, graphic, headline, length:edition)) %>% 
+  filter(!is.na(date)) %>% 
+  unnest_tokens(output = word, input = paragraph, token = 'words')
 
+# Joining with nrc emotion words
+threemile_emotion_counts <- threemile_words %>%
+  inner_join(nrc_sent, by = "word") %>%
+  count(emotion, date, sort = TRUE)
+
+# Calculating percent of total emotion words used that day
+threemile_emotion_pct <- threemile_emotion_counts %>% 
+  group_by(date) %>% 
+  mutate(percentiment = (n / sum(n)) * 100)
 ```
+
+#### Visualize emotion frequency over time
+
+```{r}
+ggplot(threemile_emotion_pct, aes(x = date, y = percentiment)) +
+  geom_line(aes(color = emotion), size = 0.75) +
+  theme_minimal() +
+  geom_vline(xintercept = as.numeric(threemileisland_df$Date[threemileisland_date]),
+             col = "black") +
+  labs(x = "Date",
+       y = "Percent of total emotion words used",
+       title = "Frequency of emotional sentiment words used in media\n surrounding Three Mile Island disaster",
+       color = "Emotion")
+```
+
 
 ### Chernobyl disaster
 
+#### Tokenize article words and assign emotion categories
+
+```{r}
+# Splitting into individual words
+chernobyl_words <- chernobyl_df %>%
+  clean_names() %>%
+  select(!c(source_file, newspaper, graphic, headline, length:edition)) %>% 
+  filter(!is.na(date)) %>% 
+  unnest_tokens(output = word, input = paragraph, token = 'words')
+
+# Joining with nrc emotion words
+chernobyl_emotion_counts <- chernobyl_words %>%
+  inner_join(nrc_sent, by = "word") %>%
+  count(emotion, date, sort = TRUE)
+
+# Calculating percent of total emotion words used that day
+chernobyl_emotion_pct <- chernobyl_emotion_counts %>% 
+  group_by(date) %>% 
+  mutate(percentiment = (n / sum(n)) * 100)
+```
+
+#### Visualize emotion frequency over time
+
+```{r}
+ggplot(chernobyl_emotion_pct, aes(x = date, y = percentiment)) +
+  geom_line(aes(color = emotion), size = 0.75) +
+  geom_vline(xintercept = chernobyl_event,
+             col = "black") +
+  theme_minimal() +
+  labs(x = "Date",
+       y = "Percent of total emotion words used",
+       title = "Frequency of emotional sentiment words used in media\n surrounding Chernobyl disaster",
+       color = "Emotion")
+```
+
 ### Fukashima disaster
+
+#### Tokenize article words and assign emotion categories
+
+```{r}
+# Splitting into individual words
+fukushima_words <- fukashima_df %>%
+  clean_names() %>%
+  select(!c(source_file, newspaper, graphic, headline, length:edition)) %>% 
+  filter(!is.na(date)) %>% 
+  unnest_tokens(output = word, input = paragraph, token = 'words')
+
+# Joining with nrc emotion words
+fukushima_emotion_counts <- fukushima_words %>%
+  inner_join(nrc_sent, by = "word") %>%
+  count(emotion, date, sort = TRUE)
+
+# Calculating percent of total emotion words used that day
+fukushima_emotion_pct <- fukushima_emotion_counts %>% 
+  group_by(date) %>% 
+  mutate(percentiment = (n / sum(n)) * 100)
+```
+
+#### Visualize emotion frequency over time
+
+```{r}
+ggplot(fukushima_emotion_pct, aes(x = date, y = percentiment)) +
+  geom_line(aes(color = emotion), size = 0.75) +
+  geom_vline(xintercept = fukushima_event,
+             col = "black") +
+  theme_minimal() +
+  labs(x = "Date",
+       y = "Percent of total emotion words used",
+       title = "Frequency of emotional sentiment words used in media\n surrounding Fukushima disaster",
+       color = "Emotion")
+```
