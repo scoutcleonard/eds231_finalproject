@@ -72,29 +72,29 @@ chernobyl_df <- full_join(chernobyl_paragraphs_df,
 # chernobyl_df<- data_frame(element_id = seq(1:length(chernobyl_meta_df$Headline)), Date = chernobyl_meta_df$Date, Headline = chernobyl_meta_df$Headline)
 ```
 
-## Fukashima disaster data
+## fukushima disaster data
 
-```{r fukashima data}
+```{r fukushima data}
 # NOTE: FOR DISCUSSION, DESCRIBE HOW WE TOOK MEAN SENITMENT OF PARAGRAPHS RATHER THAN ARTICLE (PERHAPS MORE ACCURATE)
 
-fukashima_files <- list.files(pattern = ".docx",
-                         path = here("data/fukashima"),
+fukushima_files <- list.files(pattern = ".docx",
+                         path = here("data/fukushima"),
                          full.names = TRUE,
                          recursive = TRUE,
                          ignore.case = TRUE)
 
-fukashima_data <- lnt_read(fukashima_files) #Object of class 'LNT output'
+fukushima_data <- lnt_read(fukushima_files) #Object of class 'LNT output'
 
-fukashima_meta_df <- fukashima_data@meta %>% 
+fukushima_meta_df <- fukushima_data@meta %>% 
   rename(Art_ID = ID)
 
-fukashima_articles_df <- fukashima_data@articles
+fukushima_articles_df <- fukushima_data@articles
 
-fukashima_paragraphs_df <- fukashima_data@paragraphs
+fukushima_paragraphs_df <- fukushima_data@paragraphs
 
 #joined df with paragraphs and dates 
-fukashima_df <- full_join(fukashima_paragraphs_df,
-                                fukashima_meta_df)
+fukushima_df <- full_join(fukushima_paragraphs_df,
+                                fukushima_meta_df)
 ```
 
 ## Sentiment time series
@@ -174,16 +174,16 @@ chernobyl_event <- as.Date("1986-04-26")
 ```
 
 
-### Fukashima disaster
+### fukushima disaster
 
 #### Process data 
 
 ```{r}
-fukashima_text <- get_sentences(fukashima_df$Paragraph)
-fukashima_sent <- sentiment(fukashima_text) # neutral = 0.0000, scale -1 to 1, 0.06 = slightly positive, etc.
+fukushima_text <- get_sentences(fukushima_df$Paragraph)
+fukushima_sent <- sentiment(fukushima_text) # neutral = 0.0000, scale -1 to 1, 0.06 = slightly positive, etc.
 
 # this tool considers more than just individual words, it understands the diff btw "it is too late" and "it is not too late"
-fukashima_sent_df <- inner_join(fukashima_df, fukashima_sent, by = c("Par_ID" = "element_id")) %>% 
+fukushima_sent_df <- inner_join(fukushima_df, fukushima_sent, by = c("Par_ID" = "element_id")) %>% 
   # select only relevant columns
   select(Par_ID, Paragraph, Newspaper, Date, sentiment)
 ```
@@ -192,19 +192,19 @@ fukashima_sent_df <- inner_join(fukashima_df, fukashima_sent, by = c("Par_ID" = 
 
 ```{r}
 # approximate the sentiment (polarity of text) by grouping by paragraph
-fukashima_sent_summary <- fukashima_sent_df %>%
+fukushima_sent_summary <- fukushima_sent_df %>%
   group_by(Par_ID) %>%
   summarize(sentiment_average = mean(sentiment))
 
-fukashima_sent_summary_date <- inner_join(fukashima_sent_summary, fukashima_sent_df, by = "Par_ID") %>% 
+fukushima_sent_summary_date <- inner_join(fukushima_sent_summary, fukushima_sent_df, by = "Par_ID") %>% 
   select(Par_ID, sentiment_average, Date)
 
 # check to see if any NA values are present in the df
-apply(is.na(fukashima_sent_summary_date), 2, sum) # the argument "2" tells the function to sum over columns
+apply(is.na(fukushima_sent_summary_date), 2, sum) # the argument "2" tells the function to sum over columns
 # there are 7 missing dates...but idk why because i did an inner join. TBD later if it turns out to be a problem
 
 # add pos, neg, neutral words according to the value of sentiment 
-fukushima_pos_neg_neutral <- fukashima_sent_summary_date %>% 
+fukushima_pos_neg_neutral <- fukushima_sent_summary_date %>% 
   mutate(sent_category = case_when(
       sentiment_average < 0 ~ "Negative",
       sentiment_average > 0 ~ "Positive",
@@ -323,13 +323,13 @@ ggplot(chernobyl_emotion_pct, aes(x = date, y = percentiment)) +
        color = "Emotion")
 ```
 
-### Fukashima disaster
+### fukushima disaster
 
 #### Tokenize article words and assign emotion categories
 
 ```{r}
 # Splitting into individual words
-fukushima_words <- fukashima_df %>%
+fukushima_words <- fukushima_df %>%
   clean_names() %>%
   select(!c(source_file, newspaper, graphic, headline, length:edition)) %>% 
   filter(!is.na(date)) %>% 
