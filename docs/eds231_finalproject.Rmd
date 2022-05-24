@@ -493,7 +493,7 @@ chernobyl_tokenized %>%
        title = "Word Frequency from Media Surrounding \nthe Chernobyl Disaster")
 ```
 
-### Fukashima disaster
+### Fukushima disaster
 
 #### Clean tokens
 
