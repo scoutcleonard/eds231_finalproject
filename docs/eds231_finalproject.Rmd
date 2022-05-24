@@ -440,7 +440,7 @@ threemile_tib <-subset(threemile_words, clean != "")
 threemile_tokenized <- threemile_tib
 ```
 
-#### Plot word frequency 
+#### Plot word frequency
 
 ```{r}
 threemile_tokenized %>%
@@ -478,7 +478,7 @@ chernobyl_tib <-subset(chernobyl_words, clean != "")
 chernobyl_tokenized <- chernobyl_tib
 ```
 
-#### Plot word frequency 
+#### Plot word frequency
 
 ```{r}
 chernobyl_tokenized %>%
@@ -493,7 +493,7 @@ chernobyl_tokenized %>%
        title = "Word Frequency from Media Surrounding \nthe Chernobyl Disaster")
 ```
 
-### Fukashima disaster 
+### Fukashima disaster
 
 #### Clean tokens
 
@@ -516,7 +516,7 @@ fukushima_tib <-subset(fukushima_words, clean != "")
 fukushima_tokenized <- fukushima_tib
 ```
 
-#### Plot word frequency 
+#### Plot word frequency
 
 ```{r}
 fukushima_tokenized %>%
