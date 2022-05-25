@@ -330,7 +330,7 @@ threemile_emotion_pct <- threemile_emotion_counts %>%
 #### Visualize emotion frequency over time
 
 ```{r}
-ggplot(threemile_emotion_pct, aes(x = date, y = percentiment)) +
+threemile_emotion_plot <- ggplot(threemile_emotion_pct, aes(x = date, y = percentiment)) +
   geom_line(aes(color = emotion), size = 0.75) +
   theme_minimal() +
   geom_vline(xintercept = as.numeric(threemileisland_df$Date[threemileisland_date]),
@@ -339,6 +339,8 @@ ggplot(threemile_emotion_pct, aes(x = date, y = percentiment)) +
        y = "Percent of total emotion words used",
        title = "Frequency of emotional sentiment words used in media\n surrounding Three Mile Island disaster",
        color = "Emotion")
+
+ggplotly(threemile_emotion_plot)
 ```
 
 ### Chernobyl disaster
@@ -367,7 +369,7 @@ chernobyl_emotion_pct <- chernobyl_emotion_counts %>%
 #### Visualize emotion frequency over time
 
 ```{r}
-ggplot(chernobyl_emotion_pct, aes(x = date, y = percentiment)) +
+chernobyl_emotion_plot <- ggplot(chernobyl_emotion_pct, aes(x = date, y = percentiment)) +
   geom_line(aes(color = emotion), size = 0.75) +
   geom_vline(xintercept = chernobyl_event,
              col = "black") +
@@ -376,6 +378,8 @@ ggplot(chernobyl_emotion_pct, aes(x = date, y = percentiment)) +
        y = "Percent of total emotion words used",
        title = "Frequency of emotional sentiment words used in media\n surrounding Chernobyl disaster",
        color = "Emotion")
+
+ggplotly(chernobyl_emotion_plot)
 ```
 
 ### fukushima disaster
@@ -404,7 +408,7 @@ fukushima_emotion_pct <- fukushima_emotion_counts %>%
 #### Visualize emotion frequency over time
 
 ```{r}
-ggplot(fukushima_emotion_pct, aes(x = date, y = percentiment)) +
+fukushima_emotion_plot <- ggplot(fukushima_emotion_pct, aes(x = date, y = percentiment)) +
   geom_line(aes(color = emotion), size = 0.75) +
   geom_vline(xintercept = fukushima_event,
              col = "black") +
@@ -413,6 +417,8 @@ ggplot(fukushima_emotion_pct, aes(x = date, y = percentiment)) +
        y = "Percent of total emotion words used",
        title = "Frequency of emotional sentiment words used in media\n surrounding Fukushima disaster",
        color = "Emotion")
+
+ggplotly(fukushima_emotion_plot)
 ```
 
 ## Word frequency
