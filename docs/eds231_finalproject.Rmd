@@ -547,17 +547,6 @@ threemile_tokenized <- threemile_tib
 #### Plot word frequency
 
 ```{r}
-# threemile_tokenized %>%
-#   count(clean, sort = TRUE) %>%
-#   filter(n > 70) %>% 
-#   mutate(clean = reorder(clean, n)) %>%
-#   ggplot(aes(n, clean)) +
-#   geom_col() +
-#   labs(y = NULL) +
-#   theme_minimal() +
-#   labs(x = "Word Frequency",
-#        title = "Word Frequency from Media Surrounding \nthe Three Mile Island Disaster")
-
 threemile_wordfreq_plot <- threemile_tokenized %>%
   count(clean, sort = TRUE) %>%
   filter(n > 50) %>% 
@@ -577,7 +566,7 @@ threemile_wordfreq_plot <- threemile_tokenized %>%
 ggsave(filename = here("data",
                        "threemileisland",
                        "threemileisland_workfreq_plot.jpeg"),
-       plot = chernobyl_wordfreq_plot,
+       plot = threemile_wordfreq_plot,
        width = 15,
        height = 10)
 ```
