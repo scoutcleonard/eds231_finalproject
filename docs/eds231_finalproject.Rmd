@@ -22,6 +22,7 @@ library(sentimentr)
 library(janitor)
 library(anytime) # to convert dates to right format 
 library(plotly)
+library(MetBrewer)
 ```
 
 # Download Data
@@ -546,16 +547,39 @@ threemile_tokenized <- threemile_tib
 #### Plot word frequency
 
 ```{r}
-threemile_tokenized %>%
+# threemile_tokenized %>%
+#   count(clean, sort = TRUE) %>%
+#   filter(n > 70) %>% 
+#   mutate(clean = reorder(clean, n)) %>%
+#   ggplot(aes(n, clean)) +
+#   geom_col() +
+#   labs(y = NULL) +
+#   theme_minimal() +
+#   labs(x = "Word Frequency",
+#        title = "Word Frequency from Media Surrounding \nthe Three Mile Island Disaster")
+
+threemile_wordfreq_plot <- threemile_tokenized %>%
   count(clean, sort = TRUE) %>%
-  filter(n > 70) %>% 
+  filter(n > 50) %>% 
   mutate(clean = reorder(clean, n)) %>%
-  ggplot(aes(n, clean)) +
-  geom_col() +
+  ggplot(aes(x = n, y = clean)) +
+  geom_col(aes(fill = clean)) +
   labs(y = NULL) +
   theme_minimal() +
   labs(x = "Word Frequency",
-       title = "Word Frequency from Media Surrounding \nthe Three Mile Island Disaster")
+       title = "Word Frequency from Media Surrounding \nthe Three Mile Island Disaster") +
+  scale_fill_manual(values = rep(met.brewer("Hokusai1", n = 7), times = 4)) +
+  theme(legend.position = "none",
+        plot.title = element_text(size = 40, hjust = 0.5),
+        axis.title = element_text(size = 20),
+        axis.text = element_text(size = 10))
+
+ggsave(filename = here("data",
+                       "threemileisland",
+                       "threemileisland_workfreq_plot.jpeg"),
+       plot = chernobyl_wordfreq_plot,
+       width = 15,
+       height = 10)
 ```
 
 ### Chernobyl disaster
@@ -584,16 +608,28 @@ chernobyl_tokenized <- chernobyl_tib
 #### Plot word frequency
 
 ```{r}
-chernobyl_tokenized %>%
+chernobyl_wordfreq_plot <- chernobyl_tokenized %>%
   count(clean, sort = TRUE) %>%
   filter(n > 70) %>% 
   mutate(clean = reorder(clean, n)) %>%
-  ggplot(aes(n, clean)) +
-  geom_col() +
+  ggplot(aes(x = n, y = clean)) +
+  geom_col(aes(fill = clean)) +
   labs(y = NULL) +
   theme_minimal() +
   labs(x = "Word Frequency",
-       title = "Word Frequency from Media Surrounding \nthe Chernobyl Disaster")
+       title = "Word Frequency from Media Surrounding \nthe Chernobyl Disaster") +
+  scale_fill_manual(values = rep(met.brewer("Hokusai1", n = 7), times = 3)) +
+  theme(legend.position = "none",
+        plot.title = element_text(size = 40, hjust = 0.5),
+        axis.title = element_text(size = 20),
+        axis.text = element_text(size = 10))
+
+ggsave(filename = here("data",
+                       "chernobyl",
+                       "chernobyl_workfreq_plot.jpeg"),
+       plot = chernobyl_wordfreq_plot,
+       width = 15,
+       height = 10)
 ```
 
 ### Fukushima disaster
@@ -622,16 +658,28 @@ fukushima_tokenized <- fukushima_tib
 #### Plot word frequency
 
 ```{r}
-fukushima_tokenized %>%
+fukushima_wordfreq_plot <- fukushima_tokenized %>%
   count(clean, sort = TRUE) %>%
   filter(n > 70) %>% 
   mutate(clean = reorder(clean, n)) %>%
-  ggplot(aes(n, clean)) +
-  geom_col() +
+  ggplot(aes(x = n, y = clean)) +
+  geom_col(aes(fill = clean)) +
   labs(y = NULL) +
   theme_minimal() +
   labs(x = "Word Frequency",
-       title = "Word Frequency from Media Surrounding \nthe Fukushima Disaster")
+       title = "Word Frequency from Media Surrounding \nthe Fukushima Disaster") +
+  scale_fill_manual(values = rep(met.brewer("Hokusai1", n = 7), times = 4)) +
+  theme(legend.position = "none",
+        plot.title = element_text(size = 40, hjust = 0.5),
+        axis.title = element_text(size = 20),
+        axis.text = element_text(size = 10))
+
+ggsave(filename = here("data",
+                       "fukushima",
+                       "fukushima_workfreq_plot.jpeg"),
+       plot = fukushima_wordfreq_plot,
+       width = 15,
+       height = 10)
 ```
 
 ### 
