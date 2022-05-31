@@ -21,7 +21,6 @@ library(tidytext)
 library(sentimentr)
 library(janitor)
 library(anytime) # to convert dates to right format 
-library(plotly)
 library(MetBrewer)
 ```
 
@@ -381,9 +380,7 @@ threemile_emotion_plot <- ggplot(threemile_emotion_pct, aes(x = date, y = percen
        y = "Percent of total emotion words used",
        title = "Frequency of emotional sentiment words used in media\n surrounding Three Mile Island disaster",
        color = "Emotion") +
-  theme(plot.title = element_text(size = 40, hjust = 0.5),
-        axis.title = element_text(size = 20),
-        axis.text = element_text(size = 10)) +
+  theme(plot.title = element_text(hjust = 0.5)) +
   geom_vline(xintercept = threemileisland_date,
              col = "black",
              size = 1) +
@@ -392,10 +389,8 @@ threemile_emotion_plot <- ggplot(threemile_emotion_pct, aes(x = date, y = percen
                y = 50),
            angle = 90,
            vjust = 1.3,
-           size = 5,
+           hjust = 0.75,
            color = "black")
-
-threemile_emotion_plot
 
 # ggsave(filename = here("data",
 #                        "threemileisland",
@@ -403,8 +398,8 @@ threemile_emotion_plot
 #        plot = threemile_emotion_plot,
 #        width = 15,
 #        height = 10)
-# 
-# ggplotly(threemile_emotion_plot)
+
+threemile_emotion_plot
 ```
 
 ### Chernobyl disaster
@@ -440,20 +435,18 @@ chernobyl_emotion_plot <- ggplot(chernobyl_emotion_pct,
   labs(x = "Date",
        y = "Percent of total emotion words used",
        title = "Frequency of emotional sentiment words used in media\n surrounding Chernobyl disaster",
-        color = "Emotion") +
-  theme(plot.title = element_text(size = 40, hjust = 0.5),
-        axis.title = element_text(size = 20),
-        axis.text = element_text(size = 10)) +
+       color = "Emotion") +
+  theme(plot.title = element_text(hjust = 0.5)) +
   geom_vline(xintercept = chernobyl_event,
-            size = 1,
-            color = "black") +
+             size = 1,
+             color = "black") +
   geom_text(aes(x = chernobyl_event,
-                 label = "Chernobyl Disaster: April 26th, 1986",
-                 y = 30),
-             angle = 90,
-             vjust = 1.3,
-             size = 5,
-             color = "black")
+                label = "Chernobyl Disaster: April 26th, 1986",
+                y = 30),
+            angle = 90,
+            hjust = 0.75,
+            vjust = 1.3,
+            color = "black")
 
 #chernobyl_emotion_plot
 
@@ -464,7 +457,7 @@ chernobyl_emotion_plot <- ggplot(chernobyl_emotion_pct,
 #        width = 15,
 #        height = 10)
 
-# ggplotly(chernobyl_emotion_plot)
+chernobyl_emotion_plot
 ```
 
 ### fukushima disaster
@@ -503,27 +496,25 @@ fukushima_emotion_plot <- ggplot(fukushima_emotion_pct, aes(x = date, y = percen
        title = "Frequency of emotional sentiment words used in media\n surrounding Fukushima disaster",
        color = "Emotion") +
   geom_vline(xintercept = fukushima_event,
-            size = 1,
-            color = "black") +
-  geom_text(aes(x = fukushima_event,
-                 label = "Fukushima Disaster: March 11th, 2011", 
-                 y = 40), 
-             angle = 90, 
-             vjust = 1.3, 
-             size = 5,
+             size = 1,
              color = "black") +
-  theme(plot.title = element_text(size = 40, hjust = 0.5),
-        axis.title = element_text(size = 20),
-        axis.text = element_text(size = 10))
+  geom_text(aes(x = fukushima_event,
+                label = "Fukushima Disaster: March 11th, 2011", 
+                y = 40), 
+            angle = 90, 
+            vjust = 1.3,
+            hjust = 0.6,
+            color = "black") +
+  theme(plot.title = element_text(hjust = 0.5))
 
-ggsave(filename = here("data",
-                       "fukushima",
-                       "fukushima_emotion_plot.jpeg"),
-       plot = fukushima_emotion_plot,
-       width = 15,
-       height = 10)
+# ggsave(filename = here("data",
+#                        "fukushima",
+#                        "fukushima_emotion_plot.jpeg"),
+#        plot = fukushima_emotion_plot,
+#        width = 15,
+#        height = 10)
 
-#ggplotly(fukushima_emotion_plot)
+fukushima_emotion_plot
 ```
 
 ## Word frequency
